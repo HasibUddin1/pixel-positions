@@ -18,7 +18,7 @@ class JobController extends Controller
      */
     public function index()
     {
-        $jobs = Job::latest()->get()->groupBy('featured');
+        $jobs = Job::latest()->with(['employer', 'tags'])->get()->groupBy('featured');
 
         return view('jobs.index', [
             'jobs' => $jobs[0],
@@ -51,8 +51,8 @@ class JobController extends Controller
 
         $job = Auth::user()->employer->jobs()->create(Arr::except($attributes, 'tags'));
 
-        if($attributes['tags'] ?? false) {
-            foreach(explode(',', $attributes['tags']) as $tag){
+        if ($attributes['tags'] ?? false) {
+            foreach (explode(',', $attributes['tags']) as $tag) {
                 $job->tag($tag);
             }
         }
